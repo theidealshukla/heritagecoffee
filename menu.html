@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Heritage Coffee Shop - Menu</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Poppins:wght@300;400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#EA7C69", // Earthy orange accent from prompt/ref
+                        "background-light": "#FFFBF2", // Creamy background
+                        "background-dark": "#1F1D2B", // Dark mode background
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#252836",
+                        "text-dark": "#2D2D2D",
+                        "text-light": "#E0E6ED",
+                    },
+                    fontFamily: {
+                        display: ['Playfair Display', 'serif'],
+                        body: ['Poppins', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        'xl': "1.5rem",
+                        '2xl': "2rem",
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                    }
+                },
+            },
+        };
+    </script>
+    <style>
+        .text-stroke {
+            -webkit-text-stroke: 1px #F48E28;
+            color: transparent;
+        }
+
+        .scribble-underline {
+            position: relative;
+            display: inline-block;
+        }
+
+        .scribble-underline::after {
+            content: '';
+            position: absolute;
+            left: -5%;
+            bottom: 5px;
+            width: 110%;
+            height: 15px;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='20' viewBox='0 0 200 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12C20 12 30 5 45 5C60 5 70 15 85 15C100 15 110 5 125 5C140 5 150 15 165 15C180 15 190 5 195 5' stroke='%23FDC55E' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        #mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        #mobile-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+
+        #mobile-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-body text-text-dark dark:text-text-light transition-colors duration-300">
+    <nav
+        class="w-full py-4 md:py-6 px-6 lg:px-16 flex justify-between items-center sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-transparent">
+        <a href="index.html" class="flex items-center gap-2">
+            <div class="bg-primary text-white p-1.5 rounded-lg"><span
+                    class="material-icons-round text-2xl">coffee</span></div>
+            <span class="font-display font-bold text-2xl tracking-wide text-gray-900 dark:text-white">Heritage</span>
+        </a>
+        <div class="hidden lg:flex items-center gap-8 font-medium text-gray-600 dark:text-gray-300">
+            <a class="hover:text-primary transition-colors" href="index.html">Home</a>
+            <a class="text-primary font-semibold" href="menu.html">Menu</a>
+            <a class="hover:text-primary transition-colors" href="reservations.html">Reservations</a>
+            <a class="hover:text-primary transition-colors" href="about_us.html">About Us</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="reservations.html"
+                class="hidden lg:inline-flex bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all shadow-lg shadow-primary/20">Book
+                a Table</a>
+            <button id="menu-toggle" class="lg:hidden text-gray-600 dark:text-gray-300 p-1" aria-label="Open menu"><span
+                    class="material-icons-round text-3xl">menu</span></button>
+        </div>
+    </nav>
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-[60]" onclick="closeMobileMenu()"></div>
+    <div id="mobile-menu"
+        class="fixed top-0 right-0 h-full w-72 sm:w-80 bg-background-light dark:bg-background-dark z-[70] shadow-2xl flex flex-col">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <a href="index.html" class="flex items-center gap-2">
+                <div class="bg-primary text-white p-1.5 rounded-lg"><span
+                        class="material-icons-round text-xl">coffee</span></div><span
+                    class="font-display font-bold text-xl text-gray-900 dark:text-white">Heritage</span>
+            </a>
+            <button onclick="closeMobileMenu()" class="text-gray-500 dark:text-gray-300 p-1"
+                aria-label="Close menu"><span class="material-icons-round text-2xl">close</span></button>
+        </div>
+        <div class="flex flex-col py-4 flex-1">
+            <a href="index.html"
+                class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">Home</a>
+            <a href="menu.html"
+                class="px-6 py-4 text-primary font-semibold text-lg border-l-4 border-primary bg-primary/5">Menu</a>
+            <a href="reservations.html"
+                class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">Reservations</a>
+            <a href="about_us.html"
+                class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">About
+                Us</a>
+        </div>
+        <div class="p-6 border-t border-gray-200 dark:border-gray-700"><a href="reservations.html"
+                class="block w-full text-center bg-primary hover:bg-primary-hover text-white py-3 rounded-full font-semibold transition-all shadow-lg shadow-primary/20">Book
+                a Table</a></div>
+    </div>
+    <header class="container mx-auto px-6 pt-10 pb-16 text-center relative">
+        <div class="absolute top-0 left-10 opacity-10 dark:opacity-5 transform rotate-12">
+            <span class="material-icons-round text-9xl text-primary">coffee</span>
+        </div>
+        <div class="absolute bottom-10 right-10 opacity-10 dark:opacity-5 transform -rotate-12">
+            <span class="material-icons-round text-8xl text-secondary">bakery_dining</span>
+        </div>
+        <h3 class="text-primary font-semibold tracking-wide uppercase text-sm mb-4">Discover Our Flavors</h3>
+        <h1 class="text-4xl md:text-6xl font-display font-bold text-text-dark dark:text-white mb-6">
+            Heritage <span class="scribble-underline relative z-10 text-primary">Menu</span>
+        </h1>
+        <p class="max-w-2xl mx-auto text-gray-500 dark:text-gray-400 leading-relaxed">
+            Experience the warmth of our heritage through every sip and bite. From ethically sourced beans to artisan
+            pastries baked fresh daily.
+        </p>
+    </header>
+    <section class="container mx-auto px-6 mb-20">
+        <div class="bg-white dark:bg-surface-dark rounded-3xl p-8 md:p-12 shadow-soft relative overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-64 h-64 bg-secondary opacity-10 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl">
+            </div>
+            <div class="flex flex-col md:flex-row items-center gap-12 relative z-10">
+                <div class="w-full md:w-1/2 space-y-6">
+                    <div class="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold">
+                        Daily Special</div>
+                    <h2
+                        class="text-3xl md:text-5xl font-display font-bold text-text-dark dark:text-white leading-tight">
+                        Today's <span class="text-primary">Feature</span>: <br />Caramel Macchiato
+                    </h2>
+                    <p class="text-gray-500 dark:text-gray-400">
+                        Rich espresso layered with steamed milk and vanilla syrup, topped with foam and a buttery
+                        caramel drizzle. Perfectly balanced sweetness for your morning.
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <span class="text-3xl font-bold text-primary">$6.50</span>
+                        <span class="text-gray-400 line-through text-lg">$8.00</span>
+                    </div>
+                    <button
+                        class="bg-primary text-white px-8 py-3 rounded-full font-medium shadow-lg hover:bg-opacity-90 transition-all inline-flex items-center gap-2">
+                        Order Now <span class="material-icons-round text-sm">arrow_forward</span>
+                    </button>
+                </div>
+                <div class="w-full md:w-1/2 flex justify-center relative">
+                    <div
+                        class="absolute w-[320px] h-[320px] md:w-[420px] md:h-[420px] border-2 border-dashed border-secondary rounded-full animate-[spin_30s_linear_infinite] opacity-50">
+                    </div>
+                    <img alt="Caramel Macchiato Special"
+                        class="w-72 h-72 md:w-96 md:h-96 object-cover rounded-full shadow-2xl relative z-10 border-8 border-white dark:border-surface-dark"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCY0C__r_8M2DmJP03ReYVJAGGab1FR-rtryNDWlxrp80oiZr88YhY2LKayV-AgXfadzIoMu_p6crGqxKpbHEfJ-Wle8skgsx-V0OtLWGrKu-G3KPOeBYLEOlHX8Vo93aahcFpGY_fKTnU2y2EyeRg1IbyuSIC0XIxBSzBdV4hj6B59g2_w70YV2wi_LvBie-HKrSnQcQh9R9aDZUIuyRmaYHE4or7DwcOy-hYvI-PFOk09uhTOCy98W0Qu_qkfKvrf69FbPYKatKwm" />
+                    <div
+                        class="absolute bottom-10 right-10 md:right-20 bg-white dark:bg-surface-dark p-4 rounded-xl shadow-lg z-20 animate-bounce">
+                        <div class="flex items-center gap-2">
+                            <span class="text-yellow-400 material-icons-round">star</span>
+                            <div>
+                                <p class="text-xs font-bold text-text-dark dark:text-white">Customer Favorite</p>
+                                <p class="text-[10px] text-gray-500">4.9/5 Rating</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div
+        class="sticky top-[72px] z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm py-4 mb-12 border-b border-gray-200 dark:border-gray-800">
+        <div class="container mx-auto px-6 overflow-x-auto">
+            <div class="flex gap-4 md:justify-center min-w-max">
+                <a class="px-6 py-2 rounded-full bg-primary text-white shadow-md font-medium transition-transform hover:scale-105"
+                    href="#specialty-coffee">Specialty Coffee</a>
+                <a class="px-6 py-2 rounded-full bg-white dark:bg-surface-dark text-gray-600 dark:text-gray-300 hover:bg-secondary/20 transition-colors border border-gray-100 dark:border-gray-700"
+                    href="#beverages">Beverages</a>
+                <a class="px-6 py-2 rounded-full bg-white dark:bg-surface-dark text-gray-600 dark:text-gray-300 hover:bg-secondary/20 transition-colors border border-gray-100 dark:border-gray-700"
+                    href="#artisan-snacks">Artisan Snacks</a>
+                <a class="px-6 py-2 rounded-full bg-white dark:bg-surface-dark text-gray-600 dark:text-gray-300 hover:bg-secondary/20 transition-colors border border-gray-100 dark:border-gray-700"
+                    href="#house-desserts">House Desserts</a>
+            </div>
+        </div>
+    </div>
+    <div class="container mx-auto px-6 pb-24 space-y-20">
+        <section id="specialty-coffee">
+            <div class="flex items-end gap-4 mb-10">
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-text-dark dark:text-white">Specialty Coffee
+                </h2>
+                <div class="h-px bg-gray-300 dark:bg-gray-700 flex-grow mb-3"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div
+                    class="group bg-white dark:bg-surface-dark rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 border border-transparent hover:border-primary/20 flex gap-4 items-center">
+                    <img alt="Espresso"
+                        class="w-24 h-24 rounded-xl object-cover group-hover:scale-105 transition-transform"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh1CppPgYs78x2t8o6NJiPk5BQSuSxN0yFIV7jYZxEz6huztk4yqPxV_8VRFxfbt4mma98ps3ugxd7gN2EiLo4MYprcaBnRHxVuQ5TwDqDP0hIeOIwtQtB1ErInrJIrMOfVRRBjD_SJJJSxSvU1Ub6ROk4IhDOc2ggrbA4X-9ynEBhMij1etJDjMXPuu3hA6_qP0xFXVWu03abRVFwUKmUglRSpy3wb7NXY3r8UGXfKkYEpCHHPYzE59MoP5sPVRsTcRWmvvrC7i9H" />
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-bold text-lg text-text-dark dark:text-white">Classic Espresso</h3>
+                            <span class="text-primary font-bold">$3.50</span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">Single origin beans
+                            extracted to perfection with a rich crema.</p>
+                    </div>
+                </div>
+                <div
+                    class="group bg-white dark:bg-surface-dark rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 border border-transparent hover:border-primary/20 flex gap-4 items-center">
+                    <img alt="Cappuccino"
+                        class="w-24 h-24 rounded-xl object-cover group-hover:scale-105 transition-transform"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAieB6MZzgknliufTswGxuR0WPvnriEW7LB2-30gda0ARhkM8RtOja26iOxB4IlEWszipi-ScJrcjh3na1G7Xq4iGOGwiKLIF9lJhKbzOrE468Wxi9ecxm_XiPLeTZfaf9HmEbPITAOMUhD9UMx-8jJYSst3kOxzPT73eTVGdmjLBIBynVNqJqq86okZ5fnc8QzW8rM7_kUwkqU00JLJDuAgBQDQgqTx1NvD4_YW2t9bU8lpK2DkNZ0bjBGBAC12FAiIjkWUl9wXV73" />
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-bold text-lg text-text-dark dark:text-white">Hazelnut Cappuccino</h3>
+                            <span class="text-primary font-bold">$4.50</span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">Espresso with steamed milk
+                            foam and a hint of roasted hazelnut.</p>
+                    </div>
+                </div>
+                <div
+                    class="group bg-white dark:bg-surface-dark rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 border border-transparent hover:border-primary/20 flex gap-4 items-center">
+                    <img alt="Pour Over"
+                        class="w-24 h-24 rounded-xl object-cover group-hover:scale-105 transition-transform"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKmR1OygSuybSb4Qik888RKFwjsX22IamcoATdpD1IF4m3ZrNhngKxH1E3nNNLC8CnKWc0hgoubh27NQpRtZCAipa_98dsZbEJO04updGLkEfvqWIOyf9AqLXKpNFt2b-4pLW6HnSqu5W9TCAts86PwUvI5ppSAuHDiu5pL4iEL2qTtwBO4bAw60XaTabUWkehjyrFq94fP_NcdLTzvABg2fpzI60wkrNIY21TG7mqHhrXJUi13Lca_-OqG68VM4_2T7a6m_ZjlTri" />
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-bold text-lg text-text-dark dark:text-white">Heritage Pour Over</h3>
+                            <span class="text-primary font-bold">$5.00</span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">Hand-brewed slow drip
+                            coffee highlighting delicate floral notes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="beverages">
+            <div class="flex items-end gap-4 mb-10">
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-text-dark dark:text-white">Beverages</h2>
+                <div class="h-px bg-gray-300 dark:bg-gray-700 flex-grow mb-3"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div
+                    class="group bg-white dark:bg-surface-dark rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 border border-transparent hover:border-primary/20 flex gap-4 items-center">
+                    <img alt="Matcha Latte"
+                        class="w-24 h-24 rounded-xl object-cover group-hover:scale-105 transition-transform"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGtU0T4me2KpfJmBh03n2BLYmBJeniCB3LoFBJMT6vCWAMpt5JgclUzQ1mtBiYAs5n68LrEQ5gGLDOjj_nqsq5cGHqub_f54KUzX2kNNMvsGcIgt6ULsAc70vjB90OS0AP0X3aVqn86qboQ5lEz7_5RJAEXxVfGYdVx9H3J4vNVyYIPSvyKvue7IxUhIekL1Z3i--AqRHxLP0aRivQe_dAoVvmlKSL1Mo4ymgsOplNaKQF9nOWlaA3_CIqke5s3G9XNuTAB0ry0yHG" />
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-bold text-lg text-text-dark dark:text-white">Kyoto Matcha Latte</h3>
+                            <span class="text-primary font-bold">$5.50</span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">Premium ceremonial grade
+                            matcha whisked with oat milk.</p>
+                    </div>
+                </div>
+                <div
+                    class="group bg-white dark:bg-surface-dark rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 border border-transparent hover:border-primary/20 flex gap-4 items-center">
+                    <img alt="Iced Tea"
+                        class="w-24 h-24 rounded-xl object-cover group-hover:scale-105 transition-transform"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNPkvyXodkQxF145c-AF6qhqaJtlLNan1fIBaUPBzQzNgbHUU0ZaEjYatTUe0rxEUkemioPrCIpPW6NMTODxTskXN3v_pTPLkd9KoNdyOKlWWoi7uQLsZbz96Kdfjq4gQld4F9PLVF9Y9OI1YzT1WRxjQJuSl1hatk8MTFjHANQM7zHZLs9bqc0S1U0pofPySz7tLLBcf1R3VfXJn49DSU6BvLkZANJVWmv6amkgIKtJxN7VYEBOVH1-HwzwfV2ND9SpfyiuWHgcB2" />
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-bold text-lg text-text-dark dark:text-white">Peach Oolong Iced</h3>
+                            <span class="text-primary font-bold">$4.00</span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">Refreshing cold brewed
+                            oolong tea infused with peach slices.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="artisan-snacks">
+            <div class="flex items-end gap-4 mb-10">
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-text-dark dark:text-white">Artisan Snacks
+                </h2>
+                <div class="h-px bg-gray-300 dark:bg-gray-700 flex-grow mb-3"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div
+                    class="group bg-white dark:bg-surface-dark rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 text-center border border-transparent hover:border-primary/20">
+                    <div class="relative mb-4 inline-block">
+                        <div
+                            class="absolute inset-0 bg-secondary rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity">
+                        </div>
+                        <img alt="Croissant"
+                            class="w-40 h-40 rounded-full object-cover relative z-10 mx-auto group-hover:rotate-6 transition-transform duration-500"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6-Mc5Pl-z8sBMEHpxNBJb41atXDnox4aZ5GsX3qAu144fCjjQlD0NQoPxQC-T7atKVIwZzB5sImlmKzw_81LxTcuSMZj7HZm3mvh8g02dt5XgeaYfGW6D6sYHFm_hkUGwLS_vP4CPUuAN6ZyEvcJNh3nMW2tCqeIePUpeVvvOoH0V-OFGIlmjX6sZinwbvHJT4T5D59uM6H-kUSGipSGpT2ztcUR7ZLaeErq4KXZwrcjMas4I7n7aT1_8JmKt-7hv1ZFfblsQh779" />
+                        <span
+                            class="absolute top-0 right-0 bg-primary text-white text-xs font-bold px-2 py-1 rounded-full z-20">Fresh</span>
+                    </div>
+                    <h3 class="font-bold text-xl text-text-dark dark:text-white mb-2">Butter Croissant</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 h-10 overflow-hidden">Flaky, buttery layers
+                        baked fresh every morning.</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-lg font-bold text-primary">$3.75</span>
+                    </div>
+                </div>
+                <div
+                    class="group bg-white dark:bg-surface-dark rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 text-center border border-transparent hover:border-primary/20">
+                    <div class="relative mb-4 inline-block">
+                        <div
+                            class="absolute inset-0 bg-secondary rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity">
+                        </div>
+                        <img alt="Avocado Toast"
+                            class="w-40 h-40 rounded-full object-cover relative z-10 mx-auto group-hover:rotate-6 transition-transform duration-500"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEQ9WPtpmvft9xwvWxX2JTpPc2Q27fC8bkvj94vcCNR5zRPNaZ5g2cv7wu-0nkyD25xTbkUCH5gWXcntjvMWUheqZeKOEGA22-ivzrnUr1tYZIH26lvFmj7n1PofPLn1XTyRJONpOm4RYzsbgclfO-ud4uIcxBp9HQVIm41DrTE-AteaPcWgAg0h8-VqJoAtOhSdAmCj2XrfIuaOffmFRxOGYgR3GNGh0LnNHvDJ7ZNXJocgOtnm_TabSAbBanRZKDnmCbVZmt1_Ol" />
+                    </div>
+                    <h3 class="font-bold text-xl text-text-dark dark:text-white mb-2">Avocado Sourdough</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 h-10 overflow-hidden">Smashed avocado, chili
+                        flakes, and radish on artisan bread.</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-lg font-bold text-primary">$8.50</span>
+                    </div>
+                </div>
+                <div
+                    class="group bg-white dark:bg-surface-dark rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 text-center border border-transparent hover:border-primary/20">
+                    <div class="relative mb-4 inline-block">
+                        <div
+                            class="absolute inset-0 bg-secondary rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity">
+                        </div>
+                        <img alt="Bagel"
+                            class="w-40 h-40 rounded-full object-cover relative z-10 mx-auto group-hover:rotate-6 transition-transform duration-500"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAo_s947HqNEp8v4zsJQ61goYhUInEeA73SvRIFwxbGqTeZffTzj5ugxY5jxR-m8iTUnwVqM3kxXLX8SQehB9kXPg_c8TyS213xERCvQOrXYqMle0pO1xbxdDDVRZgXckzps7C1fIgxVMCZLoFEVgF2KzkhKP4docdx2hmKPWWoGucbrxHiHtdKSO9u68jrKH_RGK6sfWB9hGxxRUQJ2qKs_v-NuUzYOHMiYTKYJnUdvK-MZ089MO-jmk_NNuofJ9obJ9p2CM9VAKFz" />
+                    </div>
+                    <h3 class="font-bold text-xl text-text-dark dark:text-white mb-2">Everything Bagel</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 h-10 overflow-hidden">Toasted with
+                        house-made chive cream cheese.</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-lg font-bold text-primary">$4.25</span>
+                    </div>
+                </div>
+                <div
+                    class="group bg-white dark:bg-surface-dark rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 text-center border border-transparent hover:border-primary/20">
+                    <div class="relative mb-4 inline-block">
+                        <div
+                            class="absolute inset-0 bg-secondary rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity">
+                        </div>
+                        <img alt="Panini"
+                            class="w-40 h-40 rounded-full object-cover relative z-10 mx-auto group-hover:rotate-6 transition-transform duration-500"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeysLAoTJrAAMKBUbY_gQOjZEPVufrtnSn2OG_qgtAZ5fdFD94FApL4YFivugaMMwGO7xKiRzpUcZJ37LyXpBR5ggiMW01XZ8AUHGVc3NiuJR0UqoDO6yPTc__Btu8lXvxKzpFjkZJkptZikWSfjmM-OaSROM8iemRN2QldjhVC5tGKXT5R-aYIDYCzz1Gf5V2iL06f09KoqJA9rkEGXRnDsRw-z_JaQWt8qvcGVWHLBNoC_RWkE4u97zNgbzJWpW7H-0bJeqGwwFA" />
+                    </div>
+                    <h3 class="font-bold text-xl text-text-dark dark:text-white mb-2">Caprese Panini</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 h-10 overflow-hidden">Mozzarella, tomato,
+                        basil pesto on ciabatta.</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-lg font-bold text-primary">$9.00</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="house-desserts">
+            <div class="flex items-end gap-4 mb-10">
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-text-dark dark:text-white">House Desserts
+                </h2>
+                <div class="h-px bg-gray-300 dark:bg-gray-700 flex-grow mb-3"></div>
+            </div>
+            <div
+                class="bg-white dark:bg-surface-dark rounded-3xl p-8 flex flex-col md:flex-row gap-8 items-center shadow-soft">
+                <div class="w-full md:w-1/3">
+                    <img alt="Dessert Platter" class="w-full h-80 object-cover rounded-2xl shadow-lg"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkwSn90ptfXKu-cbruOlGF_4qQKqMSXlFJ7-7a_QqDEnId_Z0Qxoscjag3E9Q-fGcgm2vbGX4tBvoHtQaha_g3pGH6e2QA-wF7nRgb-oYXzlFw355TCY1lOyGOiDkygXe6XZU0ahrvRBN5g2YQCrtlXl0-vEblaunZsMYEkRPjgnffSRJTJHTBHyBkUKYA-1xJFYz9kWoSpqfkWYMIx9PDueDQlFGNILqWdGePBDuPanESQnrSWDyjHF9N9qpuJRgh2gLeMnTIsEP5" />
+                </div>
+                <div class="w-full md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div class="flex gap-4">
+                        <div class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 flex-shrink-0 overflow-hidden">
+                            <img alt="Cake" class="w-full h-full object-cover"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2sKdnwm0kUkHXJ40J-e7HPuXCfB8f3v4Ks6hf6iePHsRT2VEYbhtndz0_iK3xc2ivS3klnLCvF1CxNmdyO0LNMgc_yN8fBKkdZrFjuN2p0kB0Ra6JuyZ73xaW9jgM_HL6NfLnlDgDDA8kSDfiQSHPjz1YYwtYkt5appAtwVG6mBun1_RhXYsJK3kdCZ8gKuJ11eoibNyQllALa6OeK3Jxdwm77qtKTYtesp9QjaZtOyCEkFlvh7TcqBPi5KO5aID4rSzf1EbLiIVD" />
+                        </div>
+                        <div>
+                            <div class="flex justify-between w-full gap-4">
+                                <h4 class="font-bold text-text-dark dark:text-white">Dark Chocolate Truffle Cake</h4>
+                                <span class="text-primary font-bold">$7.50</span>
+                            </div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Decadent layers of chocolate
+                                ganache.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 flex-shrink-0 overflow-hidden">
+                            <img alt="Cheesecake" class="w-full h-full object-cover"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkr05OyyraYa8ym4KjyqE7QUeNhA4OUzcBniGoTRBbZ4N0WhWUILAC3tTtvOBvYAgX_saJX0c6kDas5pS6OzTqXCrz8kVNB7Sed65UegGRa7-zwF06AM07tN9Ad5ZCsYGr0IGbF1GxbhjSEvgZBTH5FrZ8v0UK58NDY7iiW5dIXkMWY2_Ippwj6C2P8Y-qYRmcRKs5ovUhqBpgZpehXtdd26Mx2xTDlPFff0jwm9Rttotvbng0iueS0bF2B9bG4dvSdFP-mOmwFKuF" />
+                        </div>
+                        <div>
+                            <div class="flex justify-between w-full gap-4">
+                                <h4 class="font-bold text-text-dark dark:text-white">New York Cheesecake</h4>
+                                <span class="text-primary font-bold">$6.50</span>
+                            </div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Classic creamy cheesecake with
+                                berry compote.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 flex-shrink-0 overflow-hidden">
+                            <img alt="Tiramisu" class="w-full h-full object-cover"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMgSns2JFvXhvvo-F-D7y5MU50oXHlcD7Zz5M2COp5xukwU0Vbh1tEK-oY2QEEyTv35Jshfzwpg9ao9-5VQiqTJxMBp25y5axgrAPIUHGMBf9frDibpcKyTGOvpXpvugPnWBUI0hGDbDiZqaIuNcznUlFHKHzkj-YbsEqnT-JE6NhAHDXZeNMCVV7HBJpG3QTo_HW4pDLe1iPNY7DASJ1sGn1gDSS5TaMGZVxv6ZwAuTVDIHndVboIm-PfySf-Ctt1kFLWUu7q_-Lk" />
+                        </div>
+                        <div>
+                            <div class="flex justify-between w-full gap-4">
+                                <h4 class="font-bold text-text-dark dark:text-white">Classic Tiramisu</h4>
+                                <span class="text-primary font-bold">$7.00</span>
+                            </div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Ladyfingers soaked in our house
+                                espresso.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 flex-shrink-0 overflow-hidden">
+                            <img alt="Affogato" class="w-full h-full object-cover"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUUp7Tvj1U-z4mp6y4sQl4iDYNlI56cY6EjL1erjEZr-jMtseLEOeBQuNAAbv_BiGzoYS-SOjc5xJ4Lvmp5NiRcxWohEdw8sG1SzKrd0Jnkq5hw30OqwBAoftFnMppr_gQ0-dxlBpyzq_lD78XeZob2nBPDNrjYFOFnl0YlKkFwSK6bFBklqIDQ2kpMf0a_qho0G3qsPNcEmHbV5qatqy4h9seIGVwfyaiR3OFqoNGxcrqXQzUzuSXev3W5GBQCMOQdopNjicLV2tc" />
+                        </div>
+                        <div>
+                            <div class="flex justify-between w-full gap-4">
+                                <h4 class="font-bold text-text-dark dark:text-white">Affogato</h4>
+                                <span class="text-primary font-bold">$5.50</span>
+                            </div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Vanilla bean gelato drowned in hot
+                                espresso.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <footer
+        class="bg-background-light dark:bg-background-dark py-12 px-6 lg:px-16 border-t border-gray-200 dark:border-gray-800">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <a href="index.html" class="flex items-center gap-2">
+                <div class="bg-primary text-white p-1.5 rounded-lg"><span
+                        class="material-icons-round text-xl">coffee</span></div>
+                <span class="font-display font-bold text-xl tracking-wide text-gray-900 dark:text-white">Heritage</span>
+            </a>
+            <div class="flex flex-wrap gap-6 text-sm text-gray-500 dark:text-gray-400">
+                <a class="hover:text-primary transition-colors" href="index.html">Home</a>
+                <a class="hover:text-primary transition-colors" href="menu.html">Menu</a>
+                <a class="hover:text-primary transition-colors" href="reservations.html">Reservations</a>
+                <a class="hover:text-primary transition-colors" href="about_us.html">About Us</a>
+            </div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm">© 2025 Heritage Coffee Shop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        function openMobileMenu() { mobileMenu.classList.add('open'); mobileOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+        function closeMobileMenu() { mobileMenu.classList.remove('open'); mobileOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+        menuToggle.addEventListener('click', openMobileMenu);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.registerPlugin(ScrollTrigger);
+            gsap.from("nav", { y: -50, opacity: 0, duration: 1, ease: "power3.out" });
+            gsap.utils.toArray('section').forEach(section => {
+                gsap.from(section, {
+                    opacity: 0, y: 40, duration: 1, ease: "power3.out",
+                    scrollTrigger: { trigger: section, start: "top 85%", toggleActions: "play none none reverse" }
+                });
+            });
+            gsap.utils.toArray('.group').forEach((card, i) => {
+                gsap.from(card, {
+                    opacity: 0, y: 20, duration: 0.8, delay: i * 0.1, ease: "power2.out",
+                    scrollTrigger: { trigger: card, start: "top 90%", toggleActions: "play none none reverse" }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

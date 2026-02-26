@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Heritage Coffee Shop - About Us</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Poppins:wght@300;400;500;600&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#EA7C69", // Earthy orange accent from prompt/ref
+            "background-light": "#FFFBF2", // Creamy background
+            "background-dark": "#1F1D2B", // Dark mode background
+            "card-light": "#FFFFFF",
+            "card-dark": "#252836",
+            "text-dark": "#2D2D2D",
+            "text-light": "#E0E6ED",
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            body: ['Poppins', 'sans-serif'],
+          },
+          borderRadius: {
+            DEFAULT: "1rem",
+            'xl': "1.5rem",
+            '2xl': "2rem",
+          },
+          boxShadow: {
+            'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+          }
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .scribble-highlight {
+      position: relative;
+      z-index: 10;
+    }
+
+    .scribble-highlight::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-2deg);
+      width: 110%;
+      height: 120%;
+      border: 3px solid #FDC55E;
+      border-radius: 9999px;
+      z-index: -1;
+      opacity: 0.7;
+    }
+
+    .hero-blob {
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #mobile-menu.open {
+      transform: translateX(0);
+    }
+
+    #mobile-overlay {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    #mobile-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+
+<body
+  class="bg-background-light dark:bg-background-dark font-body text-text-dark dark:text-text-light transition-colors duration-300">
+  <nav
+    class="w-full py-4 md:py-6 px-6 lg:px-16 flex justify-between items-center sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-transparent">
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="bg-primary text-white p-1.5 rounded-lg"><span class="material-icons-round text-2xl">coffee</span>
+      </div>
+      <span class="font-display font-bold text-2xl tracking-wide text-gray-900 dark:text-white">Heritage</span>
+    </a>
+    <div class="hidden lg:flex items-center gap-8 font-medium text-gray-600 dark:text-gray-300">
+      <a class="hover:text-primary transition-colors" href="index.html">Home</a>
+      <a class="hover:text-primary transition-colors" href="menu.html">Menu</a>
+      <a class="hover:text-primary transition-colors" href="reservations.html">Reservations</a>
+      <a class="text-primary font-semibold" href="about_us.html">About Us</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="reservations.html"
+        class="hidden lg:inline-flex bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all shadow-lg shadow-primary/20">Book
+        a Table</a>
+      <button id="menu-toggle" class="lg:hidden text-gray-600 dark:text-gray-300 p-1" aria-label="Open menu"><span
+          class="material-icons-round text-3xl">menu</span></button>
+    </div>
+  </nav>
+  <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-[60]" onclick="closeMobileMenu()"></div>
+  <div id="mobile-menu"
+    class="fixed top-0 right-0 h-full w-72 sm:w-80 bg-background-light dark:bg-background-dark z-[70] shadow-2xl flex flex-col">
+    <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="bg-primary text-white p-1.5 rounded-lg"><span class="material-icons-round text-xl">coffee</span>
+        </div><span class="font-display font-bold text-xl text-gray-900 dark:text-white">Heritage</span>
+      </a>
+      <button onclick="closeMobileMenu()" class="text-gray-500 dark:text-gray-300 p-1" aria-label="Close menu"><span
+          class="material-icons-round text-2xl">close</span></button>
+    </div>
+    <div class="flex flex-col py-4 flex-1">
+      <a href="index.html"
+        class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">Home</a>
+      <a href="menu.html"
+        class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">Menu</a>
+      <a href="reservations.html"
+        class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">Reservations</a>
+      <a href="about_us.html"
+        class="px-6 py-4 text-primary font-semibold text-lg border-l-4 border-primary bg-primary/5">About Us</a>
+    </div>
+    <div class="p-6 border-t border-gray-200 dark:border-gray-700"><a href="reservations.html"
+        class="block w-full text-center bg-primary hover:bg-primary-hover text-white py-3 rounded-full font-semibold transition-all shadow-lg shadow-primary/20">Book
+        a Table</a></div>
+  </div>
+  <section
+    class="relative px-6 md:px-12 py-12 md:py-20 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <div class="relative z-10 space-y-6">
+      <h4 class="text-primary font-semibold text-lg">Our Journey</h4>
+      <h1 class="text-4xl md:text-6xl font-bold leading-tight text-gray-900 dark:text-white">
+        Brewing Stories Since <br />
+        <span class="scribble-highlight inline-block mt-2">1995</span>
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400 text-lg leading-relaxed max-w-lg">
+        At Heritage Coffee Shop, every cup tells a story. From our humble beginnings as a small family roastery to
+        becoming a beloved community hub, we've remained dedicated to the art of coffee and the warmth of connection.
+      </p>
+      <div class="flex gap-4 pt-4">
+        <button
+          class="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-full font-semibold shadow-lg shadow-orange-200 dark:shadow-none transition-all transform hover:-translate-y-1">
+          Read Full Story
+        </button>
+        <button
+          class="border-2 border-gray-300 dark:border-gray-600 hover:border-primary text-gray-700 dark:text-gray-300 hover:text-primary px-8 py-3 rounded-full font-semibold transition-all">
+          View Gallery
+        </button>
+      </div>
+      <div class="flex items-center gap-2 pt-6 text-gray-500 dark:text-gray-400 text-sm">
+        <span class="material-icons-round text-primary">schedule</span>
+        <span>Opening Hours: Mon-Sun: 7:00am - 9:00pm</span>
+      </div>
+    </div>
+    <div class="relative">
+      <div
+        class="absolute -top-10 -right-10 w-full h-full bg-accent-orange/10 dark:bg-accent-orange/5 rounded-full blur-3xl -z-10">
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-4 mt-12">
+          <img alt="Barista pouring latte art"
+            class="rounded-2xl shadow-xl w-full h-64 object-cover transform hover:scale-105 transition-transform duration-500"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGWdscNPMBUn_3VehMHxRDLpX_R2u4N31R6lk6vkunN6BD8tH5ENioaHQhf9pNXNsKrxlG_tE_TkZzpTDzHWFISCFtgkmA5_ejLUO4FR13hQbq07oEUBpqRw4HZcb3WxdaQsi6UurhW7VdMSdnMzm1vzFULQA9Gb77oTsRvvh6NvD0ipQQEa7vRrdUpKOHsqdqSfsjLNXnmnmd4mZciENIGaQ1q_RdWVGMpbjyg6AdtQml-PCdqf3X7LuhTStpcKHQ28XFuDLQXSHC" />
+          <img alt="Coffee beans close up"
+            class="rounded-2xl shadow-xl w-full h-48 object-cover transform hover:scale-105 transition-transform duration-500"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIe0xcearU4CXAcKhvsZR9cntISnbN27M05njfNjXsdBLFlmd37OvBXrQKlS-e543Z2X6i7sTyOLAyf99zFiqxiCKHYYbRvOfqY22Kewis_4t2MQ8UoIVWmpqcna3fc2A1EfenYwb3G0dW17INRwpfZoQSzjvuw_Ff42oq0zqQaZkPq7U_Qia8ZMt2vpuqfiavG0DshrGF-u2KQpCtp6imIrdOGcBebL0EFKSBrZopmvvvxkoBG0Hvr0QSs9nFIR2D1GaaS1sMzK1y" />
+        </div>
+        <div class="space-y-4">
+          <img alt="Cozy cafe interior"
+            class="rounded-2xl shadow-xl w-full h-56 object-cover transform hover:scale-105 transition-transform duration-500"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDp6ZLydHsc_g8sgrYygpxgyekGxeZLPrdWiOqJ0ZS6VbL7LYXiW6ZwUWJXWLSaSm0LUHPddgU3Y0qlSNfzZD-U0wFJ-lo0dF7vMBwaeriSjqIwlV53dSc686fq9DGfNOnGXazCacFQvfu3odGU4ymSLmD2d6UyELPuzFhsCI_RQ1f8bxwUfD1px2lbKAuEbSk9Zs_91OyddaRw6i5IIVHjjZHxEgOwOT7xKZI6MP1uJogFygRcqnp8an-9Zkia0-_G_mGYyorDWdG6" />
+          <img alt="Coffee and pastry on table"
+            class="rounded-2xl shadow-xl w-full h-72 object-cover transform hover:scale-105 transition-transform duration-500"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAApHJt6By8tA83p4v4CsVAUHWQL0L4F-XPFguxVaihfGsV1eYN7-HSGEvH-83CbeGfrLXujlA3aq-b87oJVw2PKvaJ0BSGRIOd_qrbXHe_sSUEX1f7WdM5jWKyBPy-5YG5_G2xV7k-8FEuusbafXULZxMBh_z4gTWzGIK1Qhb0VrwRKRaVQaF3gnd6Dd0IhkRvMqPIvL_uvu8BJIo47I-pVP2fl0D3FaKvPNDh7HXxzWzPF0Vg0w7xLiVa5gAyl6TnwSRag35Ejk7e" />
+        </div>
+      </div>
+      <div
+        class="absolute -bottom-6 -left-6 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-2xl flex items-center gap-4 max-w-xs animate-bounce"
+        style="animation-duration: 3s;">
+        <img alt="Signature Latte" class="w-16 h-16 rounded-full object-cover"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsMwHLG7dK8WPxY3lmqSeb3xPxsOaFMqrza55d2cnuRjZ7khBWE2JWMIIpeD_RCoDS9NrcSBIFPNnvfgtCr2GKu5_SB8SSI8mNbzNpPlMeBFRIYMEa4TrDF2KlGzbbrrI30ikNNYUy8UPsEC85Tefc2ERBUBwp8P9xAsu4WaOjr2pwaWqmBOhlX3SrYvn7E1B4ppnHi2KQseukArHxdlQsUExCiBLzSDFbaBVDFGAVSg3JeHq6kaUAPYFvJeNrWb5Y3du-qH8zXOXu" />
+        <div>
+          <h5 class="font-bold text-gray-900 dark:text-white">Signature Roast</h5>
+          <div class="flex text-accent-orange text-xs mb-1">
+            <span class="material-icons-round text-sm">star</span>
+            <span class="material-icons-round text-sm">star</span>
+            <span class="material-icons-round text-sm">star</span>
+            <span class="material-icons-round text-sm">star</span>
+            <span class="material-icons-round text-sm">star</span>
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Award winning blend</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="py-16 bg-white dark:bg-surface-dark transition-colors">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Vision &amp; <span
+            class="text-primary">Values</span></h2>
+        <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">We believe in more than just great coffee. We
+          believe in sustainable sourcing, community building, and creating a space where everyone feels at home.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div
+          class="bg-background-light dark:bg-background-dark p-8 rounded-3xl text-center hover:shadow-xl transition-shadow border border-transparent hover:border-primary/20 group">
+          <div
+            class="w-16 h-16 bg-white dark:bg-surface-dark rounded-full flex items-center justify-center mx-auto mb-6 shadow-md group-hover:scale-110 transition-transform">
+            <span class="material-icons-round text-3xl text-primary">eco</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Sustainably Sourced</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+            We work directly with farmers to ensure fair wages and environmentally friendly farming practices for every
+            bean we roast.
+          </p>
+        </div>
+        <div
+          class="bg-background-light dark:bg-background-dark p-8 rounded-3xl text-center hover:shadow-xl transition-shadow border border-transparent hover:border-primary/20 group">
+          <div
+            class="w-16 h-16 bg-white dark:bg-surface-dark rounded-full flex items-center justify-center mx-auto mb-6 shadow-md group-hover:scale-110 transition-transform">
+            <span class="material-icons-round text-3xl text-primary">groups</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Community First</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+            Our shop is a gathering place. We host local art shows, open mic nights, and charity events to give back to
+            our neighborhood.
+          </p>
+        </div>
+        <div
+          class="bg-background-light dark:bg-background-dark p-8 rounded-3xl text-center hover:shadow-xl transition-shadow border border-transparent hover:border-primary/20 group">
+          <div
+            class="w-16 h-16 bg-white dark:bg-surface-dark rounded-full flex items-center justify-center mx-auto mb-6 shadow-md group-hover:scale-110 transition-transform">
+            <span class="material-icons-round text-3xl text-primary">restaurant</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Artisan Quality</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+            From our house-made pastries to our signature roasts, we never compromise on quality. Everything is made
+            with passion.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="py-16 md:py-24 max-w-7xl mx-auto px-6 md:px-12">
+    <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+      <div>
+        <h4 class="text-primary font-semibold mb-2">The People Behind the Brew</h4>
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Meet Our <span
+            class="scribble-highlight inline-block">Team</span></h2>
+      </div>
+      <div class="flex gap-4 mt-4 md:mt-0">
+        <button
+          class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary transition-colors flex items-center justify-center">
+          <span class="material-icons-round text-sm">arrow_back_ios</span>
+        </button>
+        <button
+          class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-orange-200 dark:shadow-none">
+          <span class="material-icons-round text-sm">arrow_forward_ios</span>
+        </button>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div
+        class="bg-white dark:bg-surface-dark p-4 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 group">
+        <div class="relative overflow-hidden rounded-2xl mb-4">
+          <img alt="Head Barista"
+            class="w-full h-64 object-cover transform group-hover:scale-110 transition-transform duration-500"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpHoauu16IBPASQYsGd8J7YyHwqZG3yAS3KSD248WWJ5vK0WzaRNNg__K3Y9Wp13-SsC34ogmjDYJLUiiSVrbVrsbrqVWbBtHckG1Dr__nUEPIJnzU90x_PMsNSFAMl9NXvH3TLNh49q2z12Fwv8fMUTN94mMqv6c5Esc2-KEgCstyAyVKczmpiyS_6UevZoTbJx7RJ-d4CUK5qI8aBSDH8x3B8TMF2DYG1cKh-XWiALvpCz5KmGBPBRoBzZelj5YYYpZH06g5P7pY" />
+          <div class="absolute bottom-2 right-2 bg-white/90 dark:bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg">
+            <span class="text-xs font-bold text-gray-800 dark:text-white">5.0 ★</span>
+          </div>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Sarah Jenkins</h3>
+        <p class="text-primary text-sm font-medium mb-2">Head Barista</p>
+        <p class="text-gray-500 dark:text-gray-400 text-xs">Master of latte art and espresso tuning.</p>
+      </div>
+      <div
+        class="bg-white dark:bg-surface-dark p-4 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 group">
+        <div class="relative overflow-hidden rounded-2xl mb-4">
+          <img alt="Roaster"
+            class="w-full h-64 object-cover transform group-hover:scale-110 transition-transform duration-500"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFHuOzHLzDQ8A2_pu7M3VhBQILS-J5Jh8MxzjNdBfAyGQNSZEs3r46pKY9sZ2WGBWGOIoD3Hi_qKw0OmdIs6RgP5qzPauMbP9w1qleIthVa77NnEN_tJwa-cvMmo640leslXQ5Q9deNaq_lGtwMUNkyCuRV2Gbd1nPipCGg91PMGNdKt-Ad1P1sx2ZLzur8fHT5ATT-Uhh-1d-gMllLfJO1LAQR864qJbEZPwSTJBdUmEJTSlAEtidwc2JsFNPPyA3BBwIHGYpMddT" />
+          <div class="absolute bottom-2 right-2 bg-white/90 dark:bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg">
+            <span class="text-xs font-bold text-gray-800 dark:text-white">4.9 ★</span>
+          </div>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">David Chen</h3>
+        <p class="text-primary text-sm font-medium mb-2">Master Roaster</p>
+        <p class="text-gray-500 dark:text-gray-400 text-xs">Sourcing the finest beans from around the globe.</p>
+      </div>
+      <div
+        class="bg-white dark:bg-surface-dark p-4 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 group">
+        <div class="relative overflow-hidden rounded-2xl mb-4">
+          <img alt="Pastry Chef"
+            class="w-full h-64 object-cover transform group-hover:scale-110 transition-transform duration-500"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu_b1izzRORisT8OFedWqBftVdt3zEnkPr7KC-rygPUwYzOmNUumg6QWIocNdl6lCTivZHbvvMmTRuoT0KdKVF-5PNiwWDb9KugKnaFTGOV_pe1l-DraRU4zPgCiWeuuzW9HXmY8oVRgd8Pr4p6Xq3y2P08EsdwwPZarmLWNWgUcL6rprukzDRKAZTFIQAXB71rJ2Qn-yZpW1_eZOJiOnRMuIWBVFHAxx1lNelrEET0K83KaAUzRoYjDGKZ8iuV6J8_41qWYg93GyK" />
+          <div class="absolute bottom-2 right-2 bg-white/90 dark:bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg">
+            <span class="text-xs font-bold text-gray-800 dark:text-white">4.8 ★</span>
+          </div>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Marcus Thorne</h3>
+        <p class="text-primary text-sm font-medium mb-2">Pastry Chef</p>
+        <p class="text-gray-500 dark:text-gray-400 text-xs">Crafting sweet delights to pair with your brew.</p>
+      </div>
+      <div
+        class="bg-white dark:bg-surface-dark p-4 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 group">
+        <div class="relative overflow-hidden rounded-2xl mb-4">
+          <img alt="Manager"
+            class="w-full h-64 object-cover transform group-hover:scale-110 transition-transform duration-500"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWaTSC0t4e-uqVURIa0qwkDofxnDucSsshTVvPYvgRz4OtGVYEqKomnn5UtdEuVHJuZglduaJ5fEGHzfZ9j1ia0a4umwc5yAvUeO_j-m4hJG2FFmXdxRZ-Fs5Tb6ALCZGZXZTEWIZZim1rKXzwI7yIzHL8w3sg0Dpt2LvvzQC2xhzNh1_gBUSDpu-10geP54F0Njkid1sJ1QrK9IgDxHItfDEMa-VRiCwgXwvlKJmpJYBTSm9LzioguS2IDz6IH0gF3WxtHOqBWQJf" />
+          <div class="absolute bottom-2 right-2 bg-white/90 dark:bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg">
+            <span class="text-xs font-bold text-gray-800 dark:text-white">5.0 ★</span>
+          </div>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Elena Rodriguez</h3>
+        <p class="text-primary text-sm font-medium mb-2">Shop Manager</p>
+        <p class="text-gray-500 dark:text-gray-400 text-xs">Ensuring every visit is a memorable experience.</p>
+      </div>
+    </div>
+  </section>
+  <footer
+    class="bg-background-light dark:bg-background-dark py-12 px-6 lg:px-16 border-t border-gray-200 dark:border-gray-800">
+    <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="bg-primary text-white p-1.5 rounded-lg"><span class="material-icons-round text-xl">coffee</span>
+        </div>
+        <span class="font-display font-bold text-xl tracking-wide text-gray-900 dark:text-white">Heritage</span>
+      </a>
+      <div class="flex flex-wrap gap-6 text-sm text-gray-500 dark:text-gray-400">
+        <a class="hover:text-primary transition-colors" href="index.html">Home</a>
+        <a class="hover:text-primary transition-colors" href="menu.html">Menu</a>
+        <a class="hover:text-primary transition-colors" href="reservations.html">Reservations</a>
+        <a class="hover:text-primary transition-colors" href="about_us.html">About Us</a>
+      </div>
+      <p class="text-gray-500 dark:text-gray-400 text-sm">© 2025 Heritage Coffee Shop. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+    function openMobileMenu() { mobileMenu.classList.add('open'); mobileOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeMobileMenu() { mobileMenu.classList.remove('open'); mobileOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+    menuToggle.addEventListener('click', openMobileMenu);
+
+    document.addEventListener("DOMContentLoaded", () => {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.from("nav", { y: -50, opacity: 0, duration: 1, ease: "power3.out" });
+      gsap.utils.toArray('section').forEach(section => {
+        gsap.from(section, {
+          opacity: 0, y: 40, duration: 1, ease: "power3.out",
+          scrollTrigger: { trigger: section, start: "top 85%", toggleActions: "play none none reverse" }
+        });
+      });
+      gsap.utils.toArray('.group').forEach((card, i) => {
+        gsap.from(card, {
+          opacity: 0, y: 20, duration: 0.8, delay: i * 0.1, ease: "power2.out",
+          scrollTrigger: { trigger: card, start: "top 90%", toggleActions: "play none none reverse" }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

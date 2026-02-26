@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Heritage Coffee Shop - Reservations</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Poppins:wght@300;400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#EA7C69", // Earthy orange accent from prompt/ref
+                        "background-light": "#FFFBF2", // Creamy background
+                        "background-dark": "#1F1D2B", // Dark mode background
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#252836",
+                        "text-dark": "#2D2D2D",
+                        "text-light": "#E0E6ED",
+                    },
+                    fontFamily: {
+                        display: ['Playfair Display', 'serif'],
+                        body: ['Poppins', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        'xl': "1.5rem",
+                        '2xl': "2rem",
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        'glow': '0 0 20px rgba(234, 124, 105, 0.3)',
+                    }
+                },
+            },
+        };
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #F59E0B;
+            border-radius: 4px;
+        }
+
+        .text-stroke-highlight {
+            position: relative;
+            display: inline-block;
+            z-index: 1;
+        }
+
+        .text-stroke-highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: -5px;
+            width: 105%;
+            height: 12px;
+            background-color: #FCD34D;
+            z-index: -1;
+            opacity: 0.6;
+            transform: rotate(-2deg);
+            border-radius: 10px;
+        }
+
+        .dark .text-stroke-highlight::after {
+            background-color: #B45309;
+            opacity: 0.5;
+        }
+
+        #mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        #mobile-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+
+        #mobile-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Remove native select dropdown arrow to prevent double chevron */
+        select.appearance-none,
+        form select {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            background-image: none !important;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-body text-text-dark dark:text-text-light transition-colors duration-300 min-h-screen">
+    <nav
+        class="w-full py-4 md:py-6 px-6 lg:px-16 flex justify-between items-center sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-transparent">
+        <a href="index.html" class="flex items-center gap-2">
+            <div class="bg-primary text-white p-1.5 rounded-lg"><span
+                    class="material-icons-round text-2xl">coffee</span></div>
+            <span class="font-display font-bold text-2xl tracking-wide text-gray-900 dark:text-white">Heritage</span>
+        </a>
+        <div class="hidden lg:flex items-center gap-8 font-medium text-gray-600 dark:text-gray-300">
+            <a class="hover:text-primary transition-colors" href="index.html">Home</a>
+            <a class="hover:text-primary transition-colors" href="menu.html">Menu</a>
+            <a class="text-primary font-semibold" href="reservations.html">Reservations</a>
+            <a class="hover:text-primary transition-colors" href="about_us.html">About Us</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="reservations.html"
+                class="hidden lg:inline-flex bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all shadow-lg shadow-primary/20">Book
+                a Table</a>
+            <button id="menu-toggle" class="lg:hidden text-gray-600 dark:text-gray-300 p-1" aria-label="Open menu"><span
+                    class="material-icons-round text-3xl">menu</span></button>
+        </div>
+    </nav>
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-[60]" onclick="closeMobileMenu()"></div>
+    <div id="mobile-menu"
+        class="fixed top-0 right-0 h-full w-72 sm:w-80 bg-background-light dark:bg-background-dark z-[70] shadow-2xl flex flex-col">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <a href="index.html" class="flex items-center gap-2">
+                <div class="bg-primary text-white p-1.5 rounded-lg"><span
+                        class="material-icons-round text-xl">coffee</span></div><span
+                    class="font-display font-bold text-xl text-gray-900 dark:text-white">Heritage</span>
+            </a>
+            <button onclick="closeMobileMenu()" class="text-gray-500 dark:text-gray-300 p-1"
+                aria-label="Close menu"><span class="material-icons-round text-2xl">close</span></button>
+        </div>
+        <div class="flex flex-col py-4 flex-1">
+            <a href="index.html"
+                class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">Home</a>
+            <a href="menu.html"
+                class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">Menu</a>
+            <a href="reservations.html"
+                class="px-6 py-4 text-primary font-semibold text-lg border-l-4 border-primary bg-primary/5">Reservations</a>
+            <a href="about_us.html"
+                class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">About
+                Us</a>
+        </div>
+        <div class="p-6 border-t border-gray-200 dark:border-gray-700"><a href="reservations.html"
+                class="block w-full text-center bg-primary hover:bg-primary-hover text-white py-3 rounded-full font-semibold transition-all shadow-lg shadow-primary/20">Book
+                a Table</a></div>
+    </div>
+    <main class="relative overflow-hidden">
+        <div
+            class="absolute top-20 left-10 w-32 h-32 bg-yellow-200 dark:bg-yellow-900 rounded-full blur-3xl opacity-30 -z-10">
+        </div>
+        <div
+            class="absolute bottom-40 right-10 w-64 h-64 bg-orange-200 dark:bg-orange-900 rounded-full blur-3xl opacity-30 -z-10">
+        </div>
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+            <div class="text-center mb-16">
+                <span class="text-primary font-semibold tracking-wider uppercase text-sm mb-2 block">Book Your
+                    Table</span>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-gray-900 dark:text-white mb-6">
+                    Experience the <span class="text-stroke-highlight relative inline-block">Heritage</span> Taste
+                </h1>
+                <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                    Reserve a spot at our table and enjoy premium coffee blends and artisanal pastries in a warm,
+                    inviting atmosphere.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                <div
+                    class="lg:col-span-7 bg-surface-light dark:bg-surface-dark p-8 md:p-10 rounded-3xl shadow-soft border border-gray-100 dark:border-stone-700 relative overflow-hidden group">
+                    <div
+                        class="absolute -top-10 -right-10 w-32 h-32 bg-green-50 dark:bg-stone-800 rounded-full opacity-50 z-0">
+                    </div>
+                    <img alt="Leaf Decoration"
+                        class="absolute -top-6 -right-6 w-24 h-24 object-contain opacity-20 rotate-12 z-0 hidden md:block grayscale"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJFxZr8fJg6BSOKaHjjn6mc607BNF-MwqI4sXiVVbWTg5WdiJ4mS3_shXOZW4ZAOFiXcT1gqN9_tg4OpZA0Pb4XBYw3yr7CCKMgR8o--Dq-WQ3xqiiWYbwgslwHiYh3jX42R7DugZ4XIfzDNqNT57qQH9RinyqD_2eiWiHc2Dr4FO1CaJqjLbEY6a0FWHONTAiowFHo2AqAnDAyK-bp4NGsurUydVBn-1n375B-GwiktBBeQapN6w4_pTz0FCgkx-K09fNwKcj25f1" />
+                    <h2 class="text-2xl font-display font-bold mb-8 relative z-10 text-gray-900 dark:text-white">Make a
+                        Reservation</h2>
+                    <form class="space-y-6 relative z-10">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Date</label>
+                                <div
+                                    class="relative flex items-center bg-gray-50 dark:bg-accent-dark border border-gray-200 dark:border-stone-600 rounded-xl focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent transition-all">
+                                    <span class="pl-4 flex items-center pointer-events-none text-gray-400">
+                                        <span class="material-icons-round text-xl">calendar_today</span>
+                                    </span>
+                                    <input
+                                        class="w-full px-3 py-3.5 bg-transparent border-none focus:ring-0 outline-none dark:text-white text-gray-800 cursor-pointer"
+                                        type="date" />
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Time</label>
+                                <div
+                                    class="relative flex items-center bg-gray-50 dark:bg-accent-dark border border-gray-200 dark:border-stone-600 rounded-xl focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent transition-all">
+                                    <span class="pl-4 flex items-center pointer-events-none text-gray-400">
+                                        <span class="material-icons-round text-xl">schedule</span>
+                                    </span>
+                                    <select
+                                        class="w-full px-3 py-3.5 bg-transparent border-none focus:ring-0 outline-none dark:text-white text-gray-800 appearance-none cursor-pointer">
+                                        <option>08:00 AM</option>
+                                        <option>09:00 AM</option>
+                                        <option>10:00 AM</option>
+                                        <option>11:00 AM</option>
+                                        <option>12:00 PM</option>
+                                        <option>01:00 PM</option>
+                                        <option>02:00 PM</option>
+                                        <option>03:00 PM</option>
+                                        <option>04:00 PM</option>
+                                        <option>05:00 PM</option>
+                                    </select>
+                                    <span class="pr-4 flex items-center pointer-events-none text-gray-400">
+                                        <span class="material-icons-round">expand_more</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Guests</label>
+                                <div
+                                    class="relative flex items-center bg-gray-50 dark:bg-accent-dark border border-gray-200 dark:border-stone-600 rounded-xl focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent transition-all">
+                                    <span class="pl-4 flex items-center pointer-events-none text-gray-400">
+                                        <span class="material-icons-round text-xl">group</span>
+                                    </span>
+                                    <select
+                                        class="w-full px-3 py-3.5 bg-transparent border-none focus:ring-0 outline-none dark:text-white text-gray-800 appearance-none cursor-pointer">
+                                        <option>1 Person</option>
+                                        <option selected="">2 People</option>
+                                        <option>3 People</option>
+                                        <option>4 People</option>
+                                        <option>5 People</option>
+                                        <option>6+ People</option>
+                                    </select>
+                                    <span class="pr-4 flex items-center pointer-events-none text-gray-400">
+                                        <span class="material-icons-round">expand_more</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Occasion
+                                    (Optional)</label>
+                                <div
+                                    class="relative flex items-center bg-gray-50 dark:bg-accent-dark border border-gray-200 dark:border-stone-600 rounded-xl focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent transition-all">
+                                    <span class="pl-4 flex items-center pointer-events-none text-gray-400">
+                                        <span class="material-icons-round text-xl">celebration</span>
+                                    </span>
+                                    <select
+                                        class="w-full px-3 py-3.5 bg-transparent border-none focus:ring-0 outline-none dark:text-white text-gray-800 appearance-none cursor-pointer">
+                                        <option>Casual Dining</option>
+                                        <option>Birthday</option>
+                                        <option>Anniversary</option>
+                                        <option>Business Meeting</option>
+                                        <option>Date Night</option>
+                                    </select>
+                                    <span class="pr-4 flex items-center pointer-events-none text-gray-400">
+                                        <span class="material-icons-round">expand_more</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2 mt-2">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Special
+                                Requests</label>
+                            <textarea
+                                class="w-full px-4 py-3 bg-gray-50 dark:bg-accent-dark border border-gray-200 dark:border-stone-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all dark:text-white text-gray-800 resize-none"
+                                placeholder="Allergies, seating preference, dietary restrictions..."
+                                rows="3"></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Full
+                                    Name</label>
+                                <input
+                                    class="w-full px-4 py-3.5 bg-gray-50 dark:bg-accent-dark border border-gray-200 dark:border-stone-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all dark:text-white text-gray-800"
+                                    placeholder="John Doe" type="text" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Phone
+                                    Number</label>
+                                <input
+                                    class="w-full px-4 py-3.5 bg-gray-50 dark:bg-accent-dark border border-gray-200 dark:border-stone-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all dark:text-white text-gray-800"
+                                    placeholder="+1 (555) 000-0000" type="tel" />
+                            </div>
+                        </div>
+                        <div class="pt-4">
+                            <button
+                                class="w-full py-4 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl shadow-lg shadow-orange-200/50 dark:shadow-none transform transition hover:-translate-y-1 text-lg flex items-center justify-center gap-2"
+                                type="button">
+                                Confirm Reservation
+                            </button>
+                        </div>
+                        <p class="text-xs text-center text-gray-400 dark:text-gray-500 mt-4">
+                            By clicking confirm, you agree to our booking policy. No-shows may be charged a fee.
+                        </p>
+                    </form>
+                </div>
+                <div class="lg:col-span-5 space-y-8">
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl shadow-soft border border-gray-100 dark:border-stone-700">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="w-12 h-12 rounded-full bg-accent-light dark:bg-stone-700 flex items-center justify-center text-primary">
+                                <span class="material-icons-round">place</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-900 dark:text-white">Our Location</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Visit us in the heart of downtown
+                                </p>
+                            </div>
+                        </div>
+                        <div
+                            class="w-full h-48 bg-gray-200 dark:bg-stone-800 rounded-xl overflow-hidden mb-4 relative group cursor-pointer">
+                            <img alt="Map View"
+                                class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB75nzEeC8q9m6vNY24I0NK-fgT4Z34SnwIBVf8LGE0WdiW9s6JR_O9_xYvU2pmBVsAZvdxhdRKU76umPM1TvTbECJ8NZXyqkttqBegzau3lxCQBjtL7Zbp-3WreVKYubBV754GCaYc1TZQv4PvU4aI-OGjDZtzTuxzv_oy_cdUjUS19D-6VpUGnsvvkThMtyOZl-a-oS3U0_4SHBY53FCjQNa87V-rbWrFaNT3p7P5tBtqESwBB8Ooz5taJ2Sl1xzhaDTDQf3fG-B" />
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div
+                                    class="bg-white dark:bg-stone-800 px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-bounce">
+                                    <span class="w-3 h-3 bg-primary rounded-full"></span>
+                                    <span class="text-xs font-bold text-gray-800 dark:text-white">Heritage Coffee</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-start gap-3">
+                                <span class="material-icons-round text-gray-400 mt-1">home</span>
+                                <p class="text-gray-600 dark:text-gray-300">123 Artisan Avenue, Culinary
+                                    District<br />New York, NY 10012</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="material-icons-round text-gray-400">phone</span>
+                                <p class="text-gray-600 dark:text-gray-300">+1 (212) 555-0199</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="material-icons-round text-gray-400">email</span>
+                                <p class="text-gray-600 dark:text-gray-300">reservations@heritage.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl shadow-soft border border-gray-100 dark:border-stone-700">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="w-12 h-12 rounded-full bg-accent-light dark:bg-stone-700 flex items-center justify-center text-primary flex-shrink-0">
+                                <span class="material-icons-round">access_time</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <h3 class="font-bold text-lg text-gray-900 dark:text-white">Opening Hours</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Come visit us anytime</p>
+                            </div>
+                        </div>
+                        <ul class="space-y-3">
+                            <li
+                                class="flex justify-between items-center text-sm border-b border-gray-100 dark:border-stone-700 pb-2">
+                                <span class="text-gray-500 dark:text-gray-400">Mon - Fri</span>
+                                <span class="font-semibold text-gray-800 dark:text-gray-200">7:00 AM - 9:00 PM</span>
+                            </li>
+                            <li
+                                class="flex justify-between items-center text-sm border-b border-gray-100 dark:border-stone-700 pb-2">
+                                <span class="text-gray-500 dark:text-gray-400">Saturday</span>
+                                <span class="font-semibold text-gray-800 dark:text-gray-200">8:00 AM - 10:00 PM</span>
+                            </li>
+                            <li class="flex justify-between items-center text-sm pb-2">
+                                <span class="text-gray-500 dark:text-gray-400">Sunday</span>
+                                <span class="font-semibold text-gray-800 dark:text-gray-200">8:00 AM - 8:00 PM</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="py-16 bg-white dark:bg-stone-900 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div
+                    class="bg-accent-light dark:bg-stone-800 rounded-3xl p-8 md:p-12 lg:p-16 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-10">
+                    <div class="relative z-10 md:w-1/2">
+                        <span
+                            class="inline-block px-4 py-1.5 rounded-full bg-white dark:bg-stone-700 text-primary font-bold text-xs uppercase tracking-widest mb-4 shadow-sm">Exclusive</span>
+                        <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 dark:text-white mb-4">
+                            Hosting a Private Event?
+                        </h2>
+                        <p class="text-gray-600 dark:text-gray-300 mb-8 text-lg">
+                            From intimate birthday gatherings to corporate coffee tastings, Heritage offers the perfect
+                            venue for your special moments. Customize your menu with our chefs.
+                        </p>
+                        <a class="inline-flex items-center gap-2 text-primary font-bold hover:text-primary-hover transition group"
+                            href="#">
+                            Inquire Now
+                            <span
+                                class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                                <span class="material-icons-round text-sm">arrow_forward</span>
+                            </span>
+                        </a>
+                    </div>
+                    <div class="relative z-10 md:w-1/2 flex justify-center md:justify-end">
+                        <div class="relative w-full max-w-md h-64 md:h-80">
+                            <img alt="Coffee Event"
+                                class="absolute top-0 right-0 w-4/5 h-4/5 object-cover rounded-2xl shadow-xl z-10 border-4 border-white dark:border-stone-700"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy-v8GzXW88Bunn7d9CQi5xF_qx9nZZwlLlTQSwQ0mI3F2S-sIcDQBZhvd3f93jsD2U5x1iYkaYtylFyCy-1vndB0TzN55iZp5dCUSGcFsC2jOhTXk1BvaAUOroC7WaIducLFpik2FB6IPNdJWEDGbDDAAEf2dh_FV0PVD2FANqt9l6BSfAx50V4DRxpaoR42cQ-yzQ9R0z7v2z-UrZyBXdg255VJJmtj4hl0ujxLyYjI7JbWnAcdv72aNggdXhfqxn-4Mk_-Atn20" />
+                            <img alt="Restaurant Interior"
+                                class="absolute bottom-0 left-0 w-3/5 h-3/5 object-cover rounded-2xl shadow-lg border-4 border-white dark:border-stone-700"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCkpzxd3mmy5Ta7BX6mtuQUXhGE2BRv9xKDQIW4RvNtf8No8azSJ4BJJMxRyALDqcWW1_N2o13uPpbJC08m2rDiT6o79_DIrnD2W4QYXas4Jd0NJphuZn21ZE7tTBulPFU6yPrl8xuXXIVYrbbljyb4FRbObss3oIal9jue3fPXzB0ANi-nWm4mq3sRPEDAwKI7tgpaiWaU0K88hM_3NYd_w41z2xslL41f3Vj7tw2cpOpwLRudUDLTYR-PcOHFZPZHGS22R0UrjM1" />
+                            <div
+                                class="absolute top-1/2 left-10 transform -translate-y-1/2 bg-white dark:bg-stone-800 p-4 rounded-xl shadow-lg z-20 flex items-center gap-3 animate-pulse">
+                                <div
+                                    class="bg-green-100 dark:bg-green-900 p-2 rounded-full text-green-600 dark:text-green-400">
+                                    <span class="material-icons-round text-lg">verified</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Capacity</p>
+                                    <p class="text-sm font-bold text-gray-900 dark:text-white">Up to 50 Guests</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-24 -left-24 w-64 h-64 border-4 border-dashed border-primary/20 rounded-full animate-spin-slow"
+                        style="animation-duration: 20s;"></div>
+                </div>
+            </div>
+        </section>
+        <footer
+            class="bg-background-light dark:bg-background-dark py-12 px-6 lg:px-16 border-t border-gray-200 dark:border-gray-800">
+            <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                <a href="index.html" class="flex items-center gap-2">
+                    <div class="bg-primary text-white p-1.5 rounded-lg"><span
+                            class="material-icons-round text-xl">coffee</span></div>
+                    <span
+                        class="font-display font-bold text-xl tracking-wide text-gray-900 dark:text-white">Heritage</span>
+                </a>
+                <div class="flex flex-wrap gap-6 text-sm text-gray-500 dark:text-gray-400">
+                    <a class="hover:text-primary transition-colors" href="index.html">Home</a>
+                    <a class="hover:text-primary transition-colors" href="menu.html">Menu</a>
+                    <a class="hover:text-primary transition-colors" href="reservations.html">Reservations</a>
+                    <a class="hover:text-primary transition-colors" href="about_us.html">About Us</a>
+                </div>
+                <p class="text-gray-500 dark:text-gray-400 text-sm">© 2025 Heritage Coffee Shop. All rights reserved.
+                </p>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        function openMobileMenu() { mobileMenu.classList.add('open'); mobileOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+        function closeMobileMenu() { mobileMenu.classList.remove('open'); mobileOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+        menuToggle.addEventListener('click', openMobileMenu);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.registerPlugin(ScrollTrigger);
+            gsap.from("nav", { y: -50, opacity: 0, duration: 1, ease: "power3.out" });
+            gsap.utils.toArray('section').forEach(section => {
+                gsap.from(section, {
+                    opacity: 0, y: 40, duration: 1, ease: "power3.out",
+                    scrollTrigger: { trigger: section, start: "top 85%", toggleActions: "play none none reverse" }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Heritage Coffee Shop</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#EA7C69",
+            "primary-hover": "#D96B58",
+            "background-light": "#FFFBF2",
+            "background-dark": "#1F1D2B",
+            "surface-light": "#FFFFFF",
+            "surface-dark": "#252836",
+            "card-light": "#FFFFFF",
+            "card-dark": "#252836",
+            "text-dark": "#2D2D2D",
+            "text-light": "#E0E6ED",
+            "accent-light": "#FFF5EE",
+            "accent-dark": "#2D2A3E",
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            body: ['Poppins', 'sans-serif'],
+          },
+          borderRadius: {
+            DEFAULT: "1rem",
+            'xl': "1.5rem",
+            '2xl': "2rem",
+          },
+          boxShadow: {
+            'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+          }
+        },
+      },
+    };
+  </script>
+  <style>
+    .dashed-circle {
+      background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='1000' ry='1000' stroke='%23EA7C69' stroke-width='4' stroke-dasharray='20%2c 20' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+    }
+
+    .text-outline-highlight {
+      position: relative;
+      display: inline-block;
+    }
+
+    .text-outline-highlight::after {
+      content: '';
+      position: absolute;
+      left: -10%;
+      bottom: 5px;
+      width: 120%;
+      height: 15px;
+      background-color: #FCD9CF;
+      z-index: -1;
+      border-radius: 20px;
+      transform: rotate(-2deg);
+      opacity: 0.7;
+    }
+
+    .dark .text-outline-highlight::after {
+      background-color: #A05043;
+      opacity: 0.5;
+    }
+
+    /* Mobile menu slide animation */
+    #mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #mobile-menu.open {
+      transform: translateX(0);
+    }
+
+    #mobile-overlay {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    #mobile-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+
+<body
+  class="bg-background-light dark:bg-background-dark font-body text-text-dark dark:text-text-light transition-colors duration-300">
+
+  <!-- Navigation -->
+  <nav
+    class="w-full py-4 md:py-6 px-6 lg:px-16 flex justify-between items-center sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-transparent">
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="bg-primary text-white p-1.5 rounded-lg">
+        <span class="material-icons-round text-2xl">coffee</span>
+      </div>
+      <span class="font-display font-bold text-2xl tracking-wide text-gray-900 dark:text-white">Heritage</span>
+    </a>
+    <div class="hidden lg:flex items-center gap-8 font-medium text-gray-600 dark:text-gray-300">
+      <a class="text-primary font-semibold" href="index.html">Home</a>
+      <a class="hover:text-primary transition-colors" href="menu.html">Menu</a>
+      <a class="hover:text-primary transition-colors" href="reservations.html">Reservations</a>
+      <a class="hover:text-primary transition-colors" href="about_us.html">About Us</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="reservations.html"
+        class="hidden lg:inline-flex bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all shadow-lg shadow-primary/20">
+        Book a Table
+      </a>
+      <button id="menu-toggle" class="lg:hidden text-gray-600 dark:text-gray-300 p-1" aria-label="Open menu">
+        <span class="material-icons-round text-3xl">menu</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu Overlay -->
+  <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-[60]" onclick="closeMobileMenu()"></div>
+
+  <!-- Mobile Menu Drawer -->
+  <div id="mobile-menu"
+    class="fixed top-0 right-0 h-full w-72 sm:w-80 bg-background-light dark:bg-background-dark z-[70] shadow-2xl flex flex-col">
+    <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="bg-primary text-white p-1.5 rounded-lg">
+          <span class="material-icons-round text-xl">coffee</span>
+        </div>
+        <span class="font-display font-bold text-xl text-gray-900 dark:text-white">Heritage</span>
+      </a>
+      <button onclick="closeMobileMenu()" class="text-gray-500 dark:text-gray-300 p-1" aria-label="Close menu">
+        <span class="material-icons-round text-2xl">close</span>
+      </button>
+    </div>
+    <div class="flex flex-col py-4 flex-1">
+      <a href="index.html"
+        class="px-6 py-4 text-primary font-semibold text-lg border-l-4 border-primary bg-primary/5">Home</a>
+      <a href="menu.html"
+        class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">Menu</a>
+      <a href="reservations.html"
+        class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">Reservations</a>
+      <a href="about_us.html"
+        class="px-6 py-4 text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-primary/5 transition-colors text-lg border-l-4 border-transparent hover:border-primary">About
+        Us</a>
+    </div>
+    <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+      <a href="reservations.html"
+        class="block w-full text-center bg-primary hover:bg-primary-hover text-white py-3 rounded-full font-semibold transition-all shadow-lg shadow-primary/20">
+        Book a Table
+      </a>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <header class="relative w-full min-h-[70vh] md:min-h-[85vh] flex items-center overflow-hidden">
+    <!-- Background Image -->
+    <div class="absolute inset-0 z-0">
+      <img src="image.png" alt="Heritage Coffee Shop Storefront" class="w-full h-full object-cover object-center" />
+    </div>
+    <!-- Dark Gradient Overlay -->
+    <div class="absolute inset-0 z-[1] bg-gradient-to-r from-black/75 via-black/55 to-black/30"></div>
+    <!-- Bottom Gradient Fade -->
+    <div
+      class="absolute bottom-0 left-0 right-0 h-32 z-[1] bg-gradient-to-t from-background-light dark:from-background-dark to-transparent">
+    </div>
+
+    <!-- Hero Content -->
+    <div class="container mx-auto px-6 lg:px-16 relative z-10 py-16 md:py-24">
+      <div class="max-w-2xl space-y-6 md:space-y-8">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-sm text-white rounded-full text-sm font-semibold border border-white/20">
+          <span>☕ Best Coffee in Town</span>
+        </div>
+        <h1 class="font-display font-bold text-4xl sm:text-5xl lg:text-7xl leading-tight text-white drop-shadow-lg">
+          Heritage Coffee Shop <br />
+          Crafting Every <span class="text-primary italic">Moment</span>
+        </h1>
+        <p class="text-gray-200 text-base sm:text-lg leading-relaxed max-w-lg drop-shadow-md">
+          Experience the warmth of tradition in every cup. We source the finest beans to brew memories that linger,
+          served with passion in a cozy atmosphere.
+        </p>
+        <div class="flex flex-wrap gap-4 pt-2">
+          <a href="reservations.html"
+            class="bg-primary hover:bg-primary-hover text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold shadow-xl shadow-primary/30 transition-all transform hover:-translate-y-1 text-sm sm:text-base">
+            Book a Table
+          </a>
+          <a href="menu.html"
+            class="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white border border-white/30 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold hover:bg-white/20 hover:border-white/50 transition-all text-sm sm:text-base">
+            <span class="material-icons-round text-primary">restaurant_menu</span>
+            View Menu
+          </a>
+        </div>
+        <div class="flex items-center gap-3 pt-2">
+          <div
+            class="w-10 h-10 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-primary flex-shrink-0 border border-white/20">
+            <span class="material-icons-round text-xl">access_time</span>
+          </div>
+          <div>
+            <p class="text-sm text-gray-300">Opening Hours</p>
+            <p class="font-medium text-white">Mon-Sun: 8:00am - 10:00pm</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Popular Blends Section -->
+  <section class="py-16 sm:py-20 px-6 lg:px-16 bg-white dark:bg-[#1A1825]">
+    <div class="container mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+        <div>
+          <span class="text-primary font-bold tracking-wider uppercase text-sm mb-2 block">Premium Taste</span>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-gray-900 dark:text-white">
+            Our Popular <span class="text-outline-highlight z-10">Blends</span>
+          </h2>
+        </div>
+        <div class="flex gap-3">
+          <button
+            class="w-11 h-11 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 hover:bg-primary hover:text-white hover:border-primary transition-all">
+            <span class="material-icons-round">chevron_left</span>
+          </button>
+          <button
+            class="w-11 h-11 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/30 hover:bg-opacity-90 transition-all">
+            <span class="material-icons-round">chevron_right</span>
+          </button>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div
+          class="bg-background-light dark:bg-card-dark rounded-[2rem] p-5 sm:p-6 hover:shadow-soft transition-all duration-300 group cursor-pointer relative overflow-hidden">
+          <div class="absolute top-4 right-4 z-20 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md">
+            <span class="material-icons-round text-red-500 text-sm">favorite</span>
+          </div>
+          <div
+            class="w-full aspect-square rounded-full overflow-hidden mb-6 border-4 border-white dark:border-gray-700 shadow-md mx-auto group-hover:scale-105 transition-transform duration-500">
+            <img alt="Cappuccino" class="w-full h-full object-cover"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_naIkhmzWvAw1SpM87rJW0Y9S7ANok9SmD1qYl4Ey2wZSKGBCp7WqpAQ53mwU_6av7WjZoVPkNk26agNWtOcfLhoMh89XR5hIvubgKAcl8GJFeQOcICc0TjmPGDr3Yx48MclxYUz5dY1iTBb3TOl5HIqE-U7kMOCdyattotfYvYzIbcBd134tbRZqd87pChDzTLzG5zcRPf91eCZjeaGZ6gjPJZYRR-vVbipDm4yH0DpT8yM2FVw6kj9o4cVe_m93Z4Nn1YvXvY8R" />
+          </div>
+          <div class="text-center">
+            <h3 class="font-display font-bold text-lg sm:text-xl text-gray-900 dark:text-white mb-2">Classic Cappuccino
+            </h3>
+            <p class="text-gray-500 text-sm mb-3 line-clamp-2">Rich espresso with steamed milk foam and cocoa dust.</p>
+            <div class="flex items-center justify-center gap-1 mb-4">
+              <span class="text-yellow-400 material-icons-round text-sm">star</span>
+              <span class="font-bold text-gray-700 dark:text-gray-200 text-sm">4.8</span>
+              <span class="text-gray-400 text-xs">(1.2k)</span>
+            </div>
+            <div class="flex items-center justify-center mt-4">
+              <span class="font-bold text-2xl text-gray-900 dark:text-white"><span
+                  class="text-primary">$</span>5.50</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-background-light dark:bg-card-dark rounded-[2rem] p-5 sm:p-6 hover:shadow-soft transition-all duration-300 group cursor-pointer relative overflow-hidden">
+          <div class="absolute top-4 right-4 z-20 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md">
+            <span class="material-icons-round text-gray-300 text-sm">favorite_border</span>
+          </div>
+          <div
+            class="w-full aspect-square rounded-full overflow-hidden mb-6 border-4 border-white dark:border-gray-700 shadow-md mx-auto group-hover:scale-105 transition-transform duration-500">
+            <img alt="Avocado Toast" class="w-full h-full object-cover"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxRmYiFnTQaPt9UfyNsWhJ3oxUT1uRoqyWDwvjQQBRy0JoTQsbDTchojFrVxVipiUrOF6rmVUf4QrRy2PprDtDYX2jj9Pb0zGxpjaIQig6cG79LapxoH401kxSbbI17hNllknP81PLDvYYgtBDrXHbTnJhqCwbOV1wMAobd5s9SilZavhp9C2WuQouXw0VMuovJr5bMJvDiG3ynuJrtCsnxfBj8GwqnOdvIFFKN4lb6eW7TXococaRgPubh8pI29LVI59FKXj1Xtxt" />
+          </div>
+          <div class="text-center">
+            <h3 class="font-display font-bold text-lg sm:text-xl text-gray-900 dark:text-white mb-2">Avocado Delight
+            </h3>
+            <p class="text-gray-500 text-sm mb-3 line-clamp-2">Sourdough toast topped with smashed avocado and seeds.
+            </p>
+            <div class="flex items-center justify-center gap-1 mb-4">
+              <span class="text-yellow-400 material-icons-round text-sm">star</span>
+              <span class="font-bold text-gray-700 dark:text-gray-200 text-sm">4.9</span>
+              <span class="text-gray-400 text-xs">(850)</span>
+            </div>
+            <div class="flex items-center justify-center mt-4">
+              <span class="font-bold text-2xl text-gray-900 dark:text-white"><span
+                  class="text-primary">$</span>8.99</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-background-light dark:bg-card-dark rounded-[2rem] p-5 sm:p-6 hover:shadow-soft transition-all duration-300 group cursor-pointer relative overflow-hidden">
+          <div class="absolute top-4 right-4 z-20 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md">
+            <span class="material-icons-round text-gray-300 text-sm">favorite_border</span>
+          </div>
+          <div
+            class="w-full aspect-square rounded-full overflow-hidden mb-6 border-4 border-white dark:border-gray-700 shadow-md mx-auto group-hover:scale-105 transition-transform duration-500">
+            <img alt="Iced Latte" class="w-full h-full object-cover"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsWmN_12qrQpf-1Hz6I7cdA3m9rQRlS_xlymmmnx__YooUtajc0YEpIPxe-QznEohZn61QBxih7hhZa1G10hfrV9Pfce8TGPXKUCSPb9Mu-P8av8GAQu4593M1APlVgn_SiJWjTfpLFe7TjMDNpymsF9pUbQNsTFJtNloXkjAUVxnwvrgTXK3oESIEuy4sNQJRWCBHKyXa72j9fXkOEqcHryRdEdpd2R0KIMkf6xFAqEJEUlgg-OZkLiR-bWGANaO8JfK8dq8ga2uH" />
+          </div>
+          <div class="text-center">
+            <h3 class="font-display font-bold text-lg sm:text-xl text-gray-900 dark:text-white mb-2">Caramel Iced Latte
+            </h3>
+            <p class="text-gray-500 text-sm mb-3 line-clamp-2">Chilled espresso with milk and sweet caramel drizzle.</p>
+            <div class="flex items-center justify-center gap-1 mb-4">
+              <span class="text-yellow-400 material-icons-round text-sm">star</span>
+              <span class="font-bold text-gray-700 dark:text-gray-200 text-sm">4.7</span>
+              <span class="text-gray-400 text-xs">(2.1k)</span>
+            </div>
+            <div class="flex items-center justify-center mt-4">
+              <span class="font-bold text-2xl text-gray-900 dark:text-white"><span
+                  class="text-primary">$</span>6.00</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-background-light dark:bg-card-dark rounded-[2rem] p-5 sm:p-6 hover:shadow-soft transition-all duration-300 group cursor-pointer relative overflow-hidden">
+          <div class="absolute top-4 right-4 z-20 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md">
+            <span class="material-icons-round text-gray-300 text-sm">favorite_border</span>
+          </div>
+          <div
+            class="w-full aspect-square rounded-full overflow-hidden mb-6 border-4 border-white dark:border-gray-700 shadow-md mx-auto group-hover:scale-105 transition-transform duration-500">
+            <img alt="Coffee Beans" class="w-full h-full object-cover"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGlnYzvoZe4Xxu4Q7Tuz59r8EF5WEn1Ue41mCP1w69veBDHJjbqH_C1m8BmrGpXicpKePZ4U5N_KxReMMKIyuc-LtrtEX7kMkPOnUIKC2Q1NmLbX_fA_8EEES0Mh0rXH_9HsCQRvq91zH5IWh_beGs9Y-7OIQdCLxBWpnw-IntB5BXkeMQOyrwJpERjjX8pryuD8xkZpaEkVjY31njHjagr0DQ82k92z-ZyR04-gLf1y14MilmmGU8Z-fCaQeH6BCQw1GA6HyJIlKc" />
+          </div>
+          <div class="text-center">
+            <h3 class="font-display font-bold text-lg sm:text-xl text-gray-900 dark:text-white mb-2">House Blend Beans
+            </h3>
+            <p class="text-gray-500 text-sm mb-3 line-clamp-2">Our signature dark roast beans to brew at home.</p>
+            <div class="flex items-center justify-center gap-1 mb-4">
+              <span class="text-yellow-400 material-icons-round text-sm">star</span>
+              <span class="font-bold text-gray-700 dark:text-gray-200 text-sm">5.0</span>
+              <span class="text-gray-400 text-xs">(500)</span>
+            </div>
+            <div class="flex items-center justify-center mt-4">
+              <span class="font-bold text-2xl text-gray-900 dark:text-white"><span
+                  class="text-primary">$</span>18.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer
+    class="bg-background-light dark:bg-background-dark py-12 px-6 lg:px-16 border-t border-gray-200 dark:border-gray-800">
+    <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="bg-primary text-white p-1.5 rounded-lg">
+          <span class="material-icons-round text-xl">coffee</span>
+        </div>
+        <span class="font-display font-bold text-xl tracking-wide text-gray-900 dark:text-white">Heritage</span>
+      </a>
+      <div class="flex flex-wrap gap-6 text-sm text-gray-500 dark:text-gray-400">
+        <a class="hover:text-primary transition-colors" href="index.html">Home</a>
+        <a class="hover:text-primary transition-colors" href="menu.html">Menu</a>
+        <a class="hover:text-primary transition-colors" href="reservations.html">Reservations</a>
+        <a class="hover:text-primary transition-colors" href="about_us.html">About Us</a>
+      </div>
+      <p class="text-gray-500 dark:text-gray-400 text-sm">© 2025 Heritage Coffee Shop. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+
+    function openMobileMenu() {
+      mobileMenu.classList.add('open');
+      mobileOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      mobileOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    menuToggle.addEventListener('click', openMobileMenu);
+
+    // GSAP Animations
+    document.addEventListener("DOMContentLoaded", () => {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.from("nav", { y: -50, opacity: 0, duration: 1, ease: "power3.out" });
+      gsap.from("header h1, header p, header .inline-flex, header a, header button", {
+        y: 30, opacity: 0, duration: 1, stagger: 0.12, ease: "power3.out", delay: 0.2
+      });
+      gsap.utils.toArray('section').forEach(section => {
+        gsap.from(section, {
+          opacity: 0, y: 40, duration: 1, ease: "power3.out",
+          scrollTrigger: { trigger: section, start: "top 85%", toggleActions: "play none none reverse" }
+        });
+      });
+      gsap.utils.toArray('.group').forEach((card, i) => {
+        gsap.from(card, {
+          opacity: 0, y: 20, duration: 0.8, delay: i * 0.1, ease: "power2.out",
+          scrollTrigger: { trigger: card, start: "top 90%", toggleActions: "play none none reverse" }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
